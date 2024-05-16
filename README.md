@@ -291,3 +291,6 @@ In your Contentful space, go to **Settings > Webhooks** and add a new webhook:
 - **Verify:** You can verify if your request was made successfully by checking the webhook request log on Contentful and checking for a successful 200 status code, or by having your functions tab open on Vercel when committing the change (log drains may also be used). If you are experiencing issues with the api call, ensure you have correctly entered in the value for environment variable `CONTENTFUL_REVALIDATE_SECRET` within your Vercel deployment.
 
   ![Content successful request](https://github.com/vercel/next.js/assets/9113740/ed1ffbe9-4dbf-4ec6-9c1f-39c8949c4d38)
+
+## References
+- [Draft Mode](https://nextjs.org/docs/app/building-your-application/configuring/draft-mode)
