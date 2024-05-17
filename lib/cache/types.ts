@@ -19,46 +19,46 @@ export interface Cache<Result = unknown> {
   evict: (key: string) => void | Promise<void>;
 }
 
-export type OnGetCachedStart = { name: 'onGetCachedStart'; adapter: string };
+export type OnGetCachedStart = { name: "onGetCachedStart"; adapter: string };
 export type OnGetCachedHit<Result> = {
-  name: 'onGetCachedHit';
+  name: "onGetCachedHit";
   result: Result;
   adapter: string;
 };
-export type OnGetCachedMiss = { name: 'onGetCachedMiss'; adapter: string };
+export type OnGetCachedMiss = { name: "onGetCachedMiss"; adapter: string };
 export type OnGetCachedError = {
-  name: 'onGetCachedError';
+  name: "onGetCachedError";
   error: unknown;
   adapter: string;
 };
-export type OnSkip = { name: 'onSkip' };
-export type OnFetchStart = { name: 'onFetchStart' };
-export type OnFetchSuccess<Result> = { name: 'onFetchSuccess'; result: Result };
-export type OnFetchError = { name: 'onFetchError'; error: unknown };
-export type OnStoreStart = { name: 'onStoreStart'; adapter: string };
-export type OnStoreSkip = { name: 'onStoreSkip' };
+export type OnSkip = { name: "onSkip" };
+export type OnFetchStart = { name: "onFetchStart" };
+export type OnFetchSuccess<Result> = { name: "onFetchSuccess"; result: Result };
+export type OnFetchError = { name: "onFetchError"; error: unknown };
+export type OnStoreStart = { name: "onStoreStart"; adapter: string };
+export type OnStoreSkip = { name: "onStoreSkip" };
 export type OnStoreSuccess<Result> = {
-  name: 'onStoreSuccess';
+  name: "onStoreSuccess";
   result: Result;
   cacheKey: string;
   adapter: string;
   ttl: number;
 };
 export type OnStoreError = {
-  name: 'onStoreError';
+  name: "onStoreError";
   error: unknown;
   adapter: string;
 };
-export type OnStaleHitFromError = { name: 'onStaleHitFromError' };
-export type OnEvictStart = { name: 'onEvictStart'; adapter: string };
-export type OnEvictSuccess = { name: 'onEvictSuccess'; adapter: string };
+export type OnStaleHitFromError = { name: "onStaleHitFromError" };
+export type OnEvictStart = { name: "onEvictStart"; adapter: string };
+export type OnEvictSuccess = { name: "onEvictSuccess"; adapter: string };
 export type OnEvictError = {
-  name: 'onEvictError';
+  name: "onEvictError";
   error: unknown;
   adapter: string;
 };
 export type OnCustomEvent = {
-  name: 'onCustom';
+  name: "onCustom";
   message: string;
 };
 
@@ -92,7 +92,7 @@ export interface Context<Params, Result> {
 }
 
 export type CreateReporter<Params, Result> = (
-  context: Omit<Context<Params, Result>, 'report'>
+  context: Omit<Context<Params, Result>, "report">
 ) => Reporter<Result>;
 
 export interface CacheConfig<Params, Result> {
@@ -136,7 +136,6 @@ export interface CacheConfig<Params, Result> {
    * @default () => true
    */
   isCacheable?(context: Context<Params, Result>, result: Result): boolean;
-  // TODO: This method was created to offer a default state for CN on error. It should be removed when no longer needed
   failoverOnTimeout?(
     context: Context<Params, Result>,
     error: any

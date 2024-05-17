@@ -1,4 +1,4 @@
-import { Cache, CacheEntry } from './types';
+import { Cache, CacheEntry } from '../types';
 
 interface LRUCache {
   name: string;

@@ -1,27 +1,24 @@
-import getConfig from "next/config";
-
 import { fetchGraphQL, POST_GRAPHQL_FIELDS, extractPost } from "@/lib/api";
 import { buildClient } from "@/lib/cache";
-// import { dynamoDbAdapter } from '~/lib/cache/adapter/dynamodb';
-import { lruCacheAdapter } from "@/lib/cache/lru-cache";
+import { cosmosDbAdapter } from "@/lib/cache/adapter/cosmosdb";
+import { lruCacheAdapter } from "@/lib/cache/adapter/lru-cache";
 
 import type { Post } from "@/app/types";
 
-const POSTS_CACHE_VERSION = 1;
-const CACHE_NAME = "posts";
-const TABLE_NAME = process.env.DISTRIBUTED_CACHE_TABLE_NAME || "content-distributed-cache";
-const POSTS_CACHE_STALE_TIME_MS = 300000;
-const POSTS_MEMORY_CACHE_STALE_TIME_MS = 600000;
+const POST_CACHE_VERSION = 1;
+const CACHE_NAME = "post";
+const POST_CACHE_STALE_TIME_MS = 300000;
+const POST_MEMORY_CACHE_STALE_TIME_MS = 10000;
 
 const memoryAdapter = lruCacheAdapter<Post>({
   name: "lru-posts",
-  ttl: () => POSTS_MEMORY_CACHE_STALE_TIME_MS,
+  ttl: () => POST_MEMORY_CACHE_STALE_TIME_MS,
 });
 
-// const dynamoAdapter = dynamoDbAdapter<Footer>({
-//   name: 'dynamo-posts',
-//   tableName: TABLE_NAME,
-// });
+const cosmosAdapter = cosmosDbAdapter<Post>({
+  name: "cosmos-db-post",
+  databaseId: "Post",
+});
 
 type Params = {
   slug: string;
@@ -29,8 +26,7 @@ type Params = {
 };
 
 const cachedClient = buildClient<Params, Post>({
-  cache: memoryAdapter,
-  // : [memoryAdapter, dynamoAdapter],
+  cache: [memoryAdapter, cosmosAdapter],
   cacheName: CACHE_NAME,
   serveStaleHitOnError: true,
 
@@ -40,7 +36,9 @@ const cachedClient = buildClient<Params, Post>({
         if (process.env.NODE_ENV === "development") {
           switch (event.name) {
             case "onGetCachedHit":
-              console.log(`reporter:${event.name}:${cacheKey}:${JSON.stringify(event.result)}`);
+              console.log(`reporter:${event.name}:${cacheKey}
+  :${event.adapter}
+  :${JSON.stringify(event.result)}`);
             default:
               console.log(`reporter:${event.name}:${cacheKey}`);
           }
@@ -63,13 +61,13 @@ const cachedClient = buildClient<Params, Post>({
     return extractPost(entry);
   },
   cacheKey({ slug, preview = false }) {
-    return `v${POSTS_CACHE_VERSION}-${CACHE_NAME}-${slug}-${preview}`;
+    return `v${POST_CACHE_VERSION}-${CACHE_NAME}-${slug}-${preview}`;
   },
   isCacheable(_, result) {
     return !!result;
   },
   staleTime() {
-    return POSTS_CACHE_STALE_TIME_MS;
+    return POST_CACHE_STALE_TIME_MS;
   },
 });
 

@@ -1,8 +1,8 @@
-import { storeValue } from './storeValue';
-import { evictValue } from './evictFromCache';
-import { getCachedValue } from './getCachedValue';
+import { storeValue } from "./storeValue";
+import { evictValue } from "./evictFromCache";
+import { getCachedValue } from "./getCachedValue";
 
-import type { CacheConfig, Context } from './types';
+import type { CacheConfig, Context } from "./types";
 
 interface CachedClient<Params, Result> {
   fetch(params: Params, config?: { fresh?: boolean }): Promise<Result>;
@@ -15,7 +15,7 @@ function ensurePositiveValidNumber(
   fallback: number,
   min = 0
 ): number {
-  return typeof number === 'number' &&
+  return typeof number === "number" &&
     !Number.isNaN(number) &&
     number >= min &&
     number < Number.MAX_SAFE_INTEGER
@@ -30,7 +30,7 @@ function buildClient<Params, Result>(
 
   let getStaleTime: () => number;
 
-  if (typeof config?.staleTime === 'function') {
+  if (typeof config?.staleTime === "function") {
     getStaleTime = config.staleTime;
   } else {
     const staleTime = ensurePositiveValidNumber(
@@ -64,11 +64,11 @@ function buildClient<Params, Result>(
   }
 
   async function fetchUpstream(context: Context<Params, Result>) {
-    context.report({ name: 'onFetchStart' });
+    context.report({ name: "onFetchStart" });
 
     const result = await config.fetch(context);
 
-    context.report({ name: 'onFetchSuccess', result });
+    context.report({ name: "onFetchSuccess", result });
 
     return result;
   }
@@ -82,7 +82,7 @@ function buildClient<Params, Result>(
       context.cacheKey = config.cacheKey(context.params, freshResult);
       await storeValue(caches, context, freshResult);
     } else {
-      context.report({ name: 'onStoreSkip' });
+      context.report({ name: "onStoreSkip" });
     }
 
     return freshResult;
@@ -95,7 +95,7 @@ function buildClient<Params, Result>(
     const context = createCacheContext(params);
 
     if (fetchConfig.fresh) {
-      context.report({ name: 'onSkip' });
+      context.report({ name: "onSkip" });
       return getFreshValue(context);
     }
 
@@ -111,11 +111,11 @@ function buildClient<Params, Result>(
     try {
       return await getFreshValue(context);
     } catch (error) {
-      context.report({ name: 'onFetchError', error });
+      context.report({ name: "onFetchError", error });
 
       if (hasCachedValue) {
         if (config.serveStaleHitOnError) {
-          context.report({ name: 'onStaleHitFromError' });
+          context.report({ name: "onStaleHitFromError" });
           storeValue(caches, context, getCachedResult.result.value);
           return getCachedResult.result.value;
         }
@@ -123,7 +123,6 @@ function buildClient<Params, Result>(
         evictValue(caches, context);
       }
 
-      // TODO: This method was created to offer a default state for CN on error. It should be removed when no longer needed
       // If there is a default result we return it to be cached
       const defaultResult = config.failoverOnTimeout?.(context, error as any);
       if (!!defaultResult) {

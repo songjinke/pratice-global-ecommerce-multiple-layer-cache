@@ -22,6 +22,9 @@ export default async function PostPage({
   params: { slug: string };
   searchParams: { skipCache: string }
 }) {
+  // Enable Draft Mode by setting the cookie
+  draftMode().enable();
+
   const { isEnabled } = draftMode();
   const skipCache = searchParams.skipCache === "true";
   const { post } = await getPostAndMorePosts(params.slug, isEnabled, skipCache);

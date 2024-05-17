@@ -7,6 +7,7 @@
     "setup": "node ./lib/setup.js"
   },
   "dependencies": {
+    "@azure/cosmos": "^4.0.0",
     "@contentful/rich-text-react-renderer": "^15.17.1",
     "@contentful/rich-text-types": "^16.2.1",
     "@tailwindcss/typography": "0.5.9",

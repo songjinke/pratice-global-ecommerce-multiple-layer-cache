@@ -68,9 +68,6 @@ function HeroPost({
 }
 
 export default async function Page() {
-  // Enable Draft Mode by setting the cookie
-  draftMode().enable();
-
   const { isEnabled } = draftMode();
   const allPosts = await getAllPosts(isEnabled);
   const heroPost = allPosts[0];
